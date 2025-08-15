@@ -1,6 +1,5 @@
 package com.example.apitest2.util
 
-import android.content.Context
 import com.example.apitest2.data.MoviesRepositoryImpl
 import com.example.apitest2.data.SearchHistoryRepositoryImpl
 import com.example.apitest2.data.network.RetrofitNetworkClient
@@ -13,30 +12,34 @@ import com.example.apitest2.domain.impl.MoviesInteractorImpl
 import com.example.apitest2.domain.impl.SearchHistoryInteractorImpl
 import com.example.apitest2.domain.models.Movie
 import com.google.gson.reflect.TypeToken
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
+val domainModule = module {
 
-object Creator {
-
-
-    private fun getMoviesRepository(context: Context): MoviesRepository {
-        return MoviesRepositoryImpl(RetrofitNetworkClient(context))
+    // MoviesRepository
+    single<MoviesRepository> {
+        MoviesRepositoryImpl(RetrofitNetworkClient(androidContext()))
     }
 
-    fun provideMoviesInteractor(context: Context): MoviesInteractor {
-        return MoviesInteractorImpl(getMoviesRepository(context))
+    // MoviesInteractor
+    single<MoviesInteractor> {
+        MoviesInteractorImpl(get())
     }
 
-    private fun getSearchHistoryRepository(context: Context): SearchHistoryRepository {
-        return SearchHistoryRepositoryImpl(
+    // SearchHistoryRepository
+    single<SearchHistoryRepository> {
+        SearchHistoryRepositoryImpl(
             PrefsStorageClient<ArrayList<Movie>>(
-            context,
-            "HISTORY",
-            object : TypeToken<ArrayList<Movie>>() {}.type)
+                androidContext(),
+                "HISTORY",
+                object : TypeToken<ArrayList<Movie>>() {}.type
+            )
         )
     }
 
-    fun provideSearchHistoryInteractor(context: Context): SearchHistoryInteractor {
-        return SearchHistoryInteractorImpl(getSearchHistoryRepository(context))
+    // SearchHistoryInteractor
+    single<SearchHistoryInteractor> {
+        SearchHistoryInteractorImpl(get())
     }
-
 }

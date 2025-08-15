@@ -11,32 +11,23 @@ import com.example.apitest2.presentation.poster.PosterViewModel
 
 class PosterActivity : AppCompatActivity() {
 
-    private var viewModel: PosterViewModel? = null
-
-    private lateinit var poster: ImageView
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_poster)
-        poster = findViewById(R.id.poster)
 
+        // достаём URL из интента (ключ тот же, что ты уже используешь)
+        val imgUrl = intent.getStringExtra("poster") ?: ""
 
-        val imgUrl = intent.extras?.getString("poster", "") ?: ""
+        // добавляем фрагмент только один раз
+        if (savedInstanceState == null) {
+            val fragment = PosterFragment.newInstance(imgUrl)
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit()
 
-
-        viewModel = ViewModelProvider(this, PosterViewModel.getFactory(imgUrl))
-            .get(PosterViewModel::class.java)
-
-        viewModel?.observeUrl()?.observe(this) {
-            setupPosterImage(it)
         }
 
-    }
-
-    private fun setupPosterImage(url: String) {
-        Glide.with(applicationContext)
-            .load(url)
-            .into(poster)
     }
 }

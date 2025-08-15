@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">APItest2</string>
+    <string name="poster">ПОСТЕР</string>
+    <string name="details">О ФИЛЬМЕ</string>
+    <string name="rating">Рейтинг IMDb:</string>
+    <string name="year">Год:</string>
+    <string name="country">Страна:</string>
+    <string name="genre">Жанр:</string>
+    <string name="director">Режиссёр:</string>
+    <string name="writer">Сценарист:</string>
+    <string name="cast">В ролях:</string>
+    <string name="plot">Сюжет:</string>
 </resources>

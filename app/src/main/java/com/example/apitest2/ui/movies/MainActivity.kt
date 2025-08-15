@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -18,11 +19,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.apitest2.ui.poster.PosterActivity
+
 import com.example.apitest2.R
 import com.example.apitest2.domain.models.Movie
 import com.example.apitest2.presentation.movies.MoviesViewModel
+import com.example.apitest2.ui.about.DetailsActivity
 import com.example.apitest2.ui.models.MoviesState
+import com.example.apitest2.ui.poster.PosterActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,13 +35,15 @@ class MainActivity : AppCompatActivity() {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
-    private var viewModel: MoviesViewModel? = null
+    private val viewModel: MoviesViewModel by viewModel()
 
     private val adapter = MoviesAdapter(
         clickListener = {
             if (clickDebounce()) {
-                val intent = Intent(this, PosterActivity::class.java)
-                intent.putExtra("poster", it.image)
+                val intent = Intent(this, DetailsActivity::class.java)
+                intent.putExtra("poster", it.image)   // URL постера
+                intent.putExtra("id", it.id)
+
                 startActivity(intent)
             }
         },
@@ -96,8 +102,8 @@ class MainActivity : AppCompatActivity() {
         favMovieList.adapter = favAdapter
 
 
-        viewModel = ViewModelProvider(this, MoviesViewModel.getFactory())
-            .get(MoviesViewModel::class.java)
+//        viewModel = ViewModelProvider(this, MoviesViewModel.getFactory())
+//            .get(MoviesViewModel::class.java)
 
         viewModel?.observeState()?.observe(this) {
             render(it)

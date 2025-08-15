@@ -7,6 +7,12 @@ android {
     namespace = "com.example.apitest2"
     compileSdk = 35
 
+
+    buildFeatures {
+        viewBinding = true
+        // dataBinding = false // оставь выключенным, если в XML нет <layout>
+    }
+
     defaultConfig {
         applicationId = "com.example.apitest2"
         minSdk = 24
@@ -53,4 +59,9 @@ dependencies {
     implementation (libs.androidx.lifecycle.livedata.ktx)
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
     implementation (libs.androidx.activity.ktx)
+
+    implementation("io.insert-koin:koin-android:3.5.0")
+
+    implementation("androidx.fragment:fragment-ktx:1.8.2")
+
 }
