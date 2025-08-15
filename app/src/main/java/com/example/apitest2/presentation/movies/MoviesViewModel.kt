@@ -17,20 +17,21 @@ import com.example.apitest2.domain.api.MoviesInteractor
 import com.example.apitest2.domain.api.SearchHistoryInteractor
 import com.example.apitest2.domain.models.Movie
 import com.example.apitest2.ui.models.MoviesState
-import com.example.apitest2.util.Creator
 
-class MoviesViewModel(context: Context): ViewModel() {
+class MoviesViewModel(context: Context,
+                      private val moviesInteractor: MoviesInteractor,
+                      private val historyMoviesInteractor: SearchHistoryInteractor): ViewModel() {
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
 
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val app = (this[APPLICATION_KEY] as MoviesApplication )
-                MoviesViewModel(app)
-            }
-        }
+//        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
+//            initializer {
+//                val app = (this[APPLICATION_KEY] as MoviesApplication )
+//                MoviesViewModel(app)
+//            }
+//        }
 
     }
 
@@ -44,8 +45,8 @@ class MoviesViewModel(context: Context): ViewModel() {
     fun observeHistoryMovies(): LiveData<List<Movie>> = historyMovies
 
 
-    private val moviesInteractor = Creator.provideMoviesInteractor(context)
-    private val historyMoviesInteractor = Creator.provideSearchHistoryInteractor(context)
+//    private val moviesInteractor = Creator.provideMoviesInteractor(context)
+//    private val historyMoviesInteractor = Creator.provideSearchHistoryInteractor(context)
 
     private var lastSearchText: String = ""
 

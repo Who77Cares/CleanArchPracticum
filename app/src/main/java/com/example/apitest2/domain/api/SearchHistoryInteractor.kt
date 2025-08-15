@@ -1,6 +1,7 @@
 package com.example.apitest2.domain.api
 
 import com.example.apitest2.domain.models.Movie
+import com.example.apitest2.domain.models.MovieDetails
 
 interface SearchHistoryInteractor {
 
@@ -10,6 +11,8 @@ interface SearchHistoryInteractor {
     interface HistoryConsumer {
         fun consume(searchHistory: List<Movie>?)
     }
+
+
 }
 
 /*
