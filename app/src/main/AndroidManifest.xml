@@ -19,10 +19,10 @@
         android:theme="@style/Theme.APItest2"
         tools:targetApi="33">
         <activity
-            android:name=".ui.poster.PosterActivity"
+            android:name=".adout.poster.PosterActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.movies.MainActivity"
+            android:name=".movies.ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +32,7 @@
         </activity>
 
         <activity
-            android:name=".ui.about.DetailsActivity"
+            android:name=".adout.ui.DetailsActivity"
             android:exported="false" />
     </application>
 
