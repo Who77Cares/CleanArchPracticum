@@ -3,6 +3,7 @@ package com.example.apitest2.util
 import com.example.apitest2.adout.ui.AboutViewModel
 import com.example.apitest2.movies.ui.MoviesViewModel
 import com.example.apitest2.adout.poster.PosterViewModel
+import com.example.apitest2.cast.ui.CastViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -20,6 +21,10 @@ val viewModelModule = module {
 
     viewModel { (posterUrl: String) ->
         PosterViewModel(posterUrl)
+    }
+
+    viewModel { (movieId: String) ->
+        CastViewModel(movieId, get())
     }
 
 }

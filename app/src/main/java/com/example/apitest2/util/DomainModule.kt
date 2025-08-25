@@ -1,5 +1,6 @@
 package com.example.apitest2.util
 
+import com.example.apitest2.cast.data.CastConverter
 import com.example.apitest2.network.MoviesRepositoryImpl
 import com.example.apitest2.movies.data.storage.SearchHistoryRepositoryImpl
 import com.example.apitest2.network.RetrofitNetworkClient
@@ -11,15 +12,19 @@ import com.example.apitest2.movies.domain.SearchHistoryRepository
 import com.example.apitest2.network.domain.MoviesInteractorImpl
 import com.example.apitest2.movies.domain.SearchHistoryInteractorImpl
 import com.example.apitest2.movies.domain.models.Movie
+import com.example.apitest2.network.api.NetworkClient
 import com.google.gson.reflect.TypeToken
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val domainModule = module {
 
+    single<NetworkClient> { RetrofitNetworkClient(androidContext()) }
+
+
     // MoviesRepository
     single<MoviesRepository> {
-        MoviesRepositoryImpl(RetrofitNetworkClient(androidContext()))
+        MoviesRepositoryImpl(get(), get())
     }
 
     // MoviesInteractor
@@ -42,4 +47,10 @@ val domainModule = module {
     single<SearchHistoryInteractor> {
         SearchHistoryInteractorImpl(get())
     }
+
+
+    factory<CastConverter> {
+        CastConverter()
+    }
+
 }

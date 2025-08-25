@@ -8,8 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.apitest2.databinding.FragmentAboutBinding
 import com.example.apitest2.adout.domain.MovieDetails
-import com.example.apitest2.adout.ui.AboutViewModel
-import com.example.apitest2.adout.ui.AboutState
+import com.example.apitest2.cast.ui.CastActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -23,7 +22,6 @@ class AboutFragment: Fragment() {
 
         fun newInstance(movieId: String) = AboutFragment().apply {
             arguments = Bundle().apply {
-
                 putString(MOVIE_ID, movieId)
             }
         }
@@ -51,20 +49,51 @@ class AboutFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-
         aboutViewModel.observeState().observe(viewLifecycleOwner) {
-            Log.d("ABOUT", "state=$it")
+
             when(it) {
                 is AboutState.Content ->{
-                    Log.d("ABOUT", "movie=${it.movie}")
+
                     showDetails(it.movie)
                 }
                 is AboutState.Error -> {
-                    Log.d("ABOUT", "error=${it.message}")
+
                     showErrorMessage(it.message)
                 }
             }
         }
+
+//        val ctx = requireContext()
+//        val repo: MoviesRepositoryImpl = MoviesRepositoryImpl(RetrofitNetworkClient(ctx), CastConverter())
+//        val movieInteractor: MoviesInteractorImpl = MoviesInteractorImpl(repo)
+//
+//        binding.showCastButton.setOnClickListener {
+//            val movieId = requireArguments().getString(MOVIE_ID)!!
+//
+//            movieInteractor.getCast(
+//                movieId = movieId,
+//                consumer = object : MoviesInteractor.MovieCastConsumer {
+//                    override fun consume(
+//                        movieCast: MovieCast?,
+//                        errorMessage: String?
+//                    ) {
+//                        Log.d("Каст", movieCast.toString())
+//                    }
+//
+//                }
+//            )
+//        }
+
+
+        binding.showCastButton.setOnClickListener {
+            startActivity(
+                CastActivity.newInstance(
+                    context = requireContext(),
+                    moviesId = requireArguments().getString(MOVIE_ID).orEmpty()
+                )
+            )
+        }
+
     }
 
     private fun showErrorMessage(message: String) {

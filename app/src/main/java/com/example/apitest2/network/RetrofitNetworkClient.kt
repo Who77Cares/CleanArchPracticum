@@ -3,9 +3,9 @@ package com.example.apitest2.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.util.Log
 import com.example.apitest2.network.api.NetworkClient
 import com.example.apitest2.adout.data.MovieDetailsRequest
+import com.example.apitest2.cast.data.CastRequest
 import com.example.apitest2.movies.data.dto.MovieSearchRequest
 import com.example.apitest2.movies.data.dto.Response
 import com.example.apitest2.network.api.IMDbApi
@@ -30,7 +30,7 @@ class RetrofitNetworkClient(private val context: Context) : NetworkClient {
             return Response().apply { resultCode = -1 }
         }
 
-        return when(dto) {
+        return when (dto) {
             is MovieSearchRequest -> {
                 val resp = imdbService.findMovie(dto.expression).execute()
                 val body = resp.body() ?: Response()
@@ -42,7 +42,15 @@ class RetrofitNetworkClient(private val context: Context) : NetworkClient {
 
             is MovieDetailsRequest -> {
                 val resp = imdbService.getMovieDetails(dto.movieId).execute()
-                Log.d("NET", "details code=${resp.code()} msg=${resp.message()}")
+
+                val body = resp.body() ?: Response()
+                body.apply { resultCode = resp.code() }
+            }
+
+            // получаем каст
+            is CastRequest -> {
+                val resp = imdbService.getFullCast(dto.movieId).execute()
+
                 val body = resp.body() ?: Response()
                 body.apply { resultCode = resp.code() }
             }
