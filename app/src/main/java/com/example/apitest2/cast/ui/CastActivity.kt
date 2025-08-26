@@ -7,9 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.apitest2.R
+import com.example.apitest2.RVItem
 import com.example.apitest2.databinding.ActivityCastBinding
+import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+
 
 class CastActivity: AppCompatActivity(R.layout.activity_cast) {
 
@@ -26,9 +29,15 @@ class CastActivity: AppCompatActivity(R.layout.activity_cast) {
         parametersOf(intent.getStringExtra(MOVIES_ID))
     }
 
-    private val adapter = MoviesCastAdapter()
+//    private val adapter = MoviesCastAdapter()
 
     private lateinit var binding: ActivityCastBinding
+
+    private val adapter = ListDelegationAdapter<List<RVItem>>(
+        movieCastHeaderDelegate(),
+        movieCastPersonDelegate(),
+    )
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,5 +1,6 @@
 package com.example.apitest2.cast.ui
 
+import com.example.apitest2.RVItem
 import com.example.apitest2.cast.domain.MovieCast
 
 sealed interface MoviesCastState {
@@ -8,7 +9,7 @@ sealed interface MoviesCastState {
 
     data class Content(
         val fullTitle: String,
-        val items: List<MoviesCastRVItem>,
+        val items: List<RVItem>,
     ) : MoviesCastState
 
     data class Error(
