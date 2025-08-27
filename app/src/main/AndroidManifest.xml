@@ -5,8 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
-
     <application
         android:name=".MoviesApplication"
         android:allowBackup="true"
@@ -20,6 +18,15 @@
         tools:targetApi="33">
 
         <activity
+            android:name=".RootActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".adout.poster.PosterActivity"
             android:exported="false" />
 
@@ -27,16 +34,6 @@
             android:name=".cast.ui.CastActivity"
             android:exported="false" />
 
-
-        <activity
-            android:name=".movies.ui.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <activity
             android:name=".adout.ui.DetailsActivity"

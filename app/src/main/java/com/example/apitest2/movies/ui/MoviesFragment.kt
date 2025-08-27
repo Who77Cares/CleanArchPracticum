@@ -1,44 +1,45 @@
 package com.example.apitest2.movies.ui
 
-
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
-import com.example.apitest2.R
-import com.example.apitest2.movies.domain.models.Movie
-import com.example.apitest2.adout.ui.DetailsActivity
 import com.example.apitest2.adout.poster.PosterActivity
+import com.example.apitest2.adout.ui.DetailsActivity
+
+import com.example.apitest2.databinding.FragmentMoviesBinding
+import com.example.apitest2.movies.domain.models.Movie
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class MainActivity : AppCompatActivity() {
+class MoviesFragment: Fragment() {
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
-    private val viewModel: MoviesViewModel by viewModel()
+
+    private val viewModel by viewModel<MoviesViewModel>()
 
     private val adapter = MoviesAdapter(
         clickListener = {
             if (clickDebounce()) {
-                val intent = Intent(this, DetailsActivity::class.java)
-                intent.putExtra("poster", it.image)   // URL постера
+                val intent = Intent(requireContext(), DetailsActivity::class.java)
+                intent.putExtra("poster", it.image)
                 intent.putExtra("id", it.id)
-
                 startActivity(intent)
             }
         },
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     private val favAdapter = MoviesAdapter(
         clickListener = {
             if (clickDebounce()) {
-                val intent = Intent(this, PosterActivity::class.java)
+                val intent = Intent(requireContext(), PosterActivity::class.java)
                 intent.putExtra("poster", it.image)
                 startActivity(intent)
             }
@@ -62,69 +63,74 @@ class MainActivity : AppCompatActivity() {
         }
     )
 
-    private lateinit var showHistoryButton: Button
+    private lateinit var binding: FragmentMoviesBinding
+    private val handler = Handler(Looper.getMainLooper())
 
     private lateinit var queryInput: EditText
     private lateinit var placeholderMessage: TextView
     private lateinit var moviesList: RecyclerView
-    private lateinit var favMovieList: RecyclerView
     private lateinit var progressBar: ProgressBar
-
+    private lateinit var showHistoryButton: Button
     private var textWatcher: TextWatcher? = null
+
+
+    private lateinit var favMovieList: RecyclerView
 
     private var isClickAllowed = true
 
-    private val handler = Handler(Looper.getMainLooper())
+    // свяжем вёрстку с кодом фрагмента
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentMoviesBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+        placeholderMessage = binding.placeholderMessage
+        queryInput = binding.queryInput
+        moviesList = binding.movies
+        progressBar = binding.progressBar
+        favMovieList = binding.favMovies
+        showHistoryButton = binding.showFavoriteMovies
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        placeholderMessage = findViewById(R.id.placeholderMessage)
-        queryInput = findViewById(R.id.queryInput)
-        moviesList = findViewById(R.id.movies)
-        favMovieList = findViewById(R.id.fav_movies)
-        progressBar = findViewById(R.id.progressBar)
-        showHistoryButton = findViewById(R.id.show_movies)
-
-
-        moviesList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        moviesList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         moviesList.adapter = adapter
 
-        favMovieList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        favMovieList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         favMovieList.adapter = favAdapter
 
 
-//        viewModel = ViewModelProvider(this, MoviesViewModel.getFactory())
-//            .get(MoviesViewModel::class.java)
-
-        viewModel?.observeState()?.observe(this) {
-            render(it)
-        }
-
-        viewModel?.observeShowToast()?.observe(this) {
-            showToast(it)
-        }
-
-        viewModel?.observeHistoryMovies()?.observe(this) {
-            showFavMovies(it)
-        }
 
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel?.searchDebounce(
                     changedText = s?.toString() ?: ""
                 )
             }
-
             override fun afterTextChanged(s: Editable?) {}
         }
-
         textWatcher?.let { queryInput.addTextChangedListener(it) }
+
+
+
+        // Здесь пришлось заменить LifecycleOwner на ViewLifecycleOwner
+        viewModel?.observeState()?.observe(viewLifecycleOwner) {
+            render(it)
+        }
+
+        viewModel?.observeShowToast()?.observe(viewLifecycleOwner) {
+            showToast(it)
+        }
+
+        viewModel?.observeHistoryMovies()?.observe(viewLifecycleOwner) {
+            showFavMovies(it)
+        }
 
 
         showHistoryButton.setOnClickListener {
@@ -133,12 +139,9 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
-    override fun onDestroy() {
-        super.onDestroy()
-        textWatcher?.let {
-            queryInput.removeTextChangedListener(it)
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        textWatcher?.let { queryInput.removeTextChangedListener(it) }
     }
 
 
@@ -205,13 +208,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun showToast(additionalMessage: String?) {
-        Toast.makeText(this, additionalMessage, Toast.LENGTH_LONG)
+        Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG)
             .show()
     }
 
-
 }
-
-
