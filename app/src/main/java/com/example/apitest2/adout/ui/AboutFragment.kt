@@ -6,9 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import com.example.apitest2.R
 import com.example.apitest2.databinding.FragmentAboutBinding
 import com.example.apitest2.adout.domain.MovieDetails
 import com.example.apitest2.cast.ui.CastActivity
+import com.example.apitest2.cast.ui.CastFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -85,25 +88,30 @@ class AboutFragment: Fragment() {
 //        }
 
 
-        binding.showCastButton.setOnClickListener {
-            startActivity(
-                CastActivity.newInstance(
-                    context = requireContext(),
-                    moviesId = requireArguments().getString(MOVIE_ID).orEmpty()
-                )
-            )
-        }
 
+        binding.showCastButton.setOnClickListener {
+            // Осуществляем навигацию
+            parentFragmentManager.commit {
+                replace(
+                    R.id.rootFragmentContainerView,
+                    CastFragment.newInstance(
+                        movieId = requireArguments().getString(MOVIE_ID).orEmpty()
+                    ),
+                    CastFragment.TAG
+                )
+                addToBackStack(CastFragment.TAG)
+            }
+        }
     }
 
     private fun showErrorMessage(message: String) {
+        Log.d("TEST_", "showErrorMessage: $message")
         binding.apply {
             details.visibility = View.GONE
             errorMessage.visibility = View.VISIBLE
             errorMessage.text = message
         }
     }
-
 
     private fun showDetails(movieDetails: MovieDetails) {
         binding.apply {
@@ -122,4 +130,6 @@ class AboutFragment: Fragment() {
 
     }
 
+
 }
+
