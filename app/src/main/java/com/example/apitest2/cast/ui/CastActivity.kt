@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.apitest2.R
-//import com.example.apitest2.RVItem
+//import com.example.apitest2.navigation.RVItem
 //import com.example.apitest2.databinding.ActivityCastBinding
 //import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 //import org.koin.androidx.viewmodel.ext.android.viewModel

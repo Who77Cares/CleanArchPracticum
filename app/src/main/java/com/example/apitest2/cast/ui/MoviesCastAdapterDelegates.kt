@@ -2,7 +2,7 @@ package com.example.apitest2.cast.ui
 
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
-import com.example.apitest2.RVItem
+import com.example.apitest2.navigation.RVItem
 import com.example.apitest2.databinding.ListItemCastBinding
 import com.example.apitest2.databinding.ListItemHeaderBinding
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding

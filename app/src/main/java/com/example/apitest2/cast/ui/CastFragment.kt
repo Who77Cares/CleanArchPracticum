@@ -8,7 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.apitest2.RVItem
+import com.example.apitest2.navigation.RVItem
 import com.example.apitest2.databinding.FragmentCastBinding
 import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel

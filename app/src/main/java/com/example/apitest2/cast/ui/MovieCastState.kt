@@ -1,7 +1,6 @@
 package com.example.apitest2.cast.ui
 
-import com.example.apitest2.RVItem
-import com.example.apitest2.cast.domain.MovieCast
+import com.example.apitest2.navigation.RVItem
 
 sealed interface MoviesCastState {
 

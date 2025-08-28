@@ -12,11 +12,15 @@ import com.example.apitest2.databinding.FragmentAboutBinding
 import com.example.apitest2.adout.domain.MovieDetails
 import com.example.apitest2.cast.ui.CastActivity
 import com.example.apitest2.cast.ui.CastFragment
+import com.example.apitest2.navigation.navigation_fragment.Router
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import org.koin.android.ext.android.inject
 
 class AboutFragment: Fragment() {
 
+
+    private val router: Router by inject()
     private var _binding: FragmentAboutBinding? = null
     private val binding  get() = _binding!!
 
@@ -68,26 +72,15 @@ class AboutFragment: Fragment() {
 
 //
 
-//        Здесь мы сначала обратились к родительскому фрагменту (parentFragment) и только потом получили доступ к parentFragmentManager.
-//        Смотрим на схему.
-//        Получается, мы получили доступ к FragmentManager корневой Activity.
-//        Запускаем приложение.
-//        Ура! Навигация работает.
-//        Удаляем ненужный код MoviesCastActivity и не забываем про AndroidManifest.xml.
-//        Вот и всё! Мы перевели всё приложение на подход Single Activity.
+// Код перехода на экран списка участников тоже стал заметно проще — теперь не приходится искать правильный FragmentManager, за нас всё делает роутер.
 
         binding.showCastButton.setOnClickListener {
-            // Осуществляем навигацию
-            parentFragment?.parentFragmentManager?.commit {
-                replace(
-                    R.id.rootFragmentContainerView,
-                    CastFragment.newInstance(
-                        movieId = requireArguments().getString(MOVIE_ID).orEmpty()
-                    ),
-                    CastFragment.TAG
+            // Переходим на следующий экран с помощью Router
+            router.openFragment(
+                CastFragment.newInstance(
+                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
                 )
-                addToBackStack(CastFragment.TAG)
-            }
+            )
         }
     }
 

@@ -24,6 +24,8 @@ import com.example.apitest2.adout.ui.DetailsFragment
 
 import com.example.apitest2.databinding.FragmentMoviesBinding
 import com.example.apitest2.movies.domain.models.Movie
+import com.example.apitest2.navigation.navigation_fragment.Router
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -35,38 +37,22 @@ class MoviesFragment: Fragment() {
 
 
     private val viewModel by viewModel<MoviesViewModel>()
+    private val router: Router by inject()
 
     private val adapter = MoviesAdapter(
-        clickListener = {
+        clickListener = { movie ->
             if (clickDebounce()) {
-//                val intent = Intent(requireContext(), DetailsActivity::class.java)
-//                intent.putExtra("poster", it.image)
-//                intent.putExtra("id", it.id)
-//                startActivity(intent)
 
-                // Выкидываем интенты. Дорогу фрагментам!
+                // Код в clickListener элемента списка стал проще: мы избавились от работы с FragmentManager за счёт выноса логики навигации в Router.
 
-                // Навигируемся на следующий экран
-                parentFragmentManager.commit {
-
-                    // Так как мы осуществляем навигацию между обычными, не вложенными контейнерами, то используем parentFragmentManager в MoviesFragment. После этого мы заменяем фрагмент, который находится в контейнере R.id.rootFragmentContainerView, на DetailsFragment.
-                    // Остаётся указать, что DetailsFragment должен попасть в Back Stack фрагментов. И готово!
-                    replace(
-                        // Указали, в каком контейнере работаем
-                        R.id.rootFragmentContainerView,
-                        // Создали фрагмент
-                        DetailsFragment.newInstance(
-                            movieId = it.id,
-                            posterUrl = it.image
-                        ),
-                        // Указали тег фрагмента
-                        DetailsFragment.TAG
+                // Переходим на следующий экран с помощью Router
+                router.openFragment(
+                    DetailsFragment.newInstance(
+                        movieId = movie.id,
+                        posterUrl = movie.image
                     )
-
-                    // Добавляем фрагмент в Back Stack
-                    addToBackStack(DetailsFragment.TAG)
-                }
-        }
+                )
+            }
 
 
         },
