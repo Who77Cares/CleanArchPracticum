@@ -34,10 +34,6 @@
             android:name=".cast.ui.CastActivity"
             android:exported="false" />
 
-
-        <activity
-            android:name=".adout.ui.DetailsActivity"
-            android:exported="false" />
     </application>
 
 </manifest>

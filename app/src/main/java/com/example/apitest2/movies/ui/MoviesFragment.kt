@@ -15,10 +15,12 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.apitest2.R
 import com.example.apitest2.adout.poster.PosterActivity
-import com.example.apitest2.adout.ui.DetailsActivity
+import com.example.apitest2.adout.ui.DetailsFragment
 
 import com.example.apitest2.databinding.FragmentMoviesBinding
 import com.example.apitest2.movies.domain.models.Movie
@@ -37,11 +39,36 @@ class MoviesFragment: Fragment() {
     private val adapter = MoviesAdapter(
         clickListener = {
             if (clickDebounce()) {
-                val intent = Intent(requireContext(), DetailsActivity::class.java)
-                intent.putExtra("poster", it.image)
-                intent.putExtra("id", it.id)
-                startActivity(intent)
-            }
+//                val intent = Intent(requireContext(), DetailsActivity::class.java)
+//                intent.putExtra("poster", it.image)
+//                intent.putExtra("id", it.id)
+//                startActivity(intent)
+
+                // Выкидываем интенты. Дорогу фрагментам!
+
+                // Навигируемся на следующий экран
+                parentFragmentManager.commit {
+
+                    // Так как мы осуществляем навигацию между обычными, не вложенными контейнерами, то используем parentFragmentManager в MoviesFragment. После этого мы заменяем фрагмент, который находится в контейнере R.id.rootFragmentContainerView, на DetailsFragment.
+                    // Остаётся указать, что DetailsFragment должен попасть в Back Stack фрагментов. И готово!
+                    replace(
+                        // Указали, в каком контейнере работаем
+                        R.id.rootFragmentContainerView,
+                        // Создали фрагмент
+                        DetailsFragment.newInstance(
+                            movieId = it.id,
+                            posterUrl = it.image
+                        ),
+                        // Указали тег фрагмента
+                        DetailsFragment.TAG
+                    )
+
+                    // Добавляем фрагмент в Back Stack
+                    addToBackStack(DetailsFragment.TAG)
+                }
+        }
+
+
         },
         onSaveClick = {
             viewModel?.saveToHistory(it)
