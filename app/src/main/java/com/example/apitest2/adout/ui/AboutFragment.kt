@@ -66,32 +66,19 @@ class AboutFragment: Fragment() {
             }
         }
 
-//        val ctx = requireContext()
-//        val repo: MoviesRepositoryImpl = MoviesRepositoryImpl(RetrofitNetworkClient(ctx), CastConverter())
-//        val movieInteractor: MoviesInteractorImpl = MoviesInteractorImpl(repo)
 //
-//        binding.showCastButton.setOnClickListener {
-//            val movieId = requireArguments().getString(MOVIE_ID)!!
-//
-//            movieInteractor.getCast(
-//                movieId = movieId,
-//                consumer = object : MoviesInteractor.MovieCastConsumer {
-//                    override fun consume(
-//                        movieCast: MovieCast?,
-//                        errorMessage: String?
-//                    ) {
-//                        Log.d("Каст", movieCast.toString())
-//                    }
-//
-//                }
-//            )
-//        }
 
-
+//        Здесь мы сначала обратились к родительскому фрагменту (parentFragment) и только потом получили доступ к parentFragmentManager.
+//        Смотрим на схему.
+//        Получается, мы получили доступ к FragmentManager корневой Activity.
+//        Запускаем приложение.
+//        Ура! Навигация работает.
+//        Удаляем ненужный код MoviesCastActivity и не забываем про AndroidManifest.xml.
+//        Вот и всё! Мы перевели всё приложение на подход Single Activity.
 
         binding.showCastButton.setOnClickListener {
             // Осуществляем навигацию
-            parentFragmentManager.commit {
+            parentFragment?.parentFragmentManager?.commit {
                 replace(
                     R.id.rootFragmentContainerView,
                     CastFragment.newInstance(
