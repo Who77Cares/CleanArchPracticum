@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.apitest2.adout.ui.DetailsFragment">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"

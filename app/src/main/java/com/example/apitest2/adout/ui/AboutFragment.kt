@@ -6,20 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
+import androidx.navigation.fragment.findNavController
 import com.example.apitest2.R
 import com.example.apitest2.databinding.FragmentAboutBinding
 import com.example.apitest2.adout.domain.MovieDetails
 import com.example.apitest2.cast.ui.CastFragment
-import com.example.apitest2.navigation.navigation_fragment.Router
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import org.koin.android.ext.android.inject
+
 
 class AboutFragment: Fragment() {
 
 
-    private val router: Router by inject()
     private var _binding: FragmentAboutBinding? = null
     private val binding  get() = _binding!!
 
@@ -69,16 +67,13 @@ class AboutFragment: Fragment() {
             }
         }
 
-//
 
-// Код перехода на экран списка участников тоже стал заметно проще — теперь не приходится искать правильный FragmentManager, за нас всё делает роутер.
+// Имейте в виду, что в классах AboutFragment и PosterFragment мы не удаляем методы newInstance(), поскольку они используются в адаптере ViewPager2.
 
         binding.showCastButton.setOnClickListener {
-            // Переходим на следующий экран с помощью Router
-            router.openFragment(
-                CastFragment.newInstance(
-                    movieId = requireArguments().getString(MOVIE_ID).orEmpty()
-                )
+            findNavController().navigate(
+                R.id.action_detailsFragment_to_castFragment,
+                CastFragment.createArgs(requireArguments().getString(MOVIE_ID).orEmpty())
             )
         }
     }

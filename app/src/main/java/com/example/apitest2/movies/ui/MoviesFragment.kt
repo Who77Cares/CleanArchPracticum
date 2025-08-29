@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.apitest2.R
@@ -24,7 +25,7 @@ import com.example.apitest2.adout.ui.DetailsFragment
 
 import com.example.apitest2.databinding.FragmentMoviesBinding
 import com.example.apitest2.movies.domain.models.Movie
-import com.example.apitest2.navigation.navigation_fragment.Router
+
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -37,25 +38,18 @@ class MoviesFragment: Fragment() {
 
 
     private val viewModel by viewModel<MoviesViewModel>()
-    private val router: Router by inject()
+
 
     private val adapter = MoviesAdapter(
         clickListener = { movie ->
             if (clickDebounce()) {
-
-                // Код в clickListener элемента списка стал проще: мы избавились от работы с FragmentManager за счёт выноса логики навигации в Router.
-
-                // Переходим на следующий экран с помощью Router
-                router.openFragment(
-                    DetailsFragment.newInstance(
-                        movieId = movie.id,
-                        posterUrl = movie.image
-                    )
+                findNavController().navigate(
+                    R.id.action_moviesFragment_to_detailsFragment,
+                    DetailsFragment.createArgs(movie.id, movie.image)
                 )
             }
-
-
         },
+
         onSaveClick = {
             viewModel?.saveToHistory(it)
             showToast("Фильм сохранён в избранное")

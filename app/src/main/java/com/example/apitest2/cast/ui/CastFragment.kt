@@ -19,17 +19,11 @@ class CastFragment: Fragment() {
     companion object {
 
         private const val ARGS_MOVIE_ID = "movie_id"
-        const val TAG = "CastFragment"
 
-        // Модифицировали метод newInstance — он должен возвращать фрагмент,
-        // а не Intent
-        fun newInstance(movieId: String): Fragment {
-            return CastFragment().apply {
-                arguments = bundleOf(
-                    ARGS_MOVIE_ID to movieId
-                )
-            }
-        }
+
+
+        fun createArgs(movieId: String): Bundle =
+            bundleOf(ARGS_MOVIE_ID to movieId)
 
     }
     private val moviesCastViewModel: CastViewModel by viewModel {
