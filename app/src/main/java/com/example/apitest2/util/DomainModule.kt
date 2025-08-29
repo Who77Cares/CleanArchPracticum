@@ -12,7 +12,11 @@ import com.example.apitest2.movies.domain.SearchHistoryRepository
 import com.example.apitest2.network.domain.MoviesInteractorImpl
 import com.example.apitest2.movies.domain.SearchHistoryInteractorImpl
 import com.example.apitest2.movies.domain.models.Movie
+import com.example.apitest2.network.NamesRepositoryImpl
 import com.example.apitest2.network.api.NetworkClient
+import com.example.apitest2.person.domain.NamesInteractor
+import com.example.apitest2.person.domain.NamesInteractorImpl
+import com.example.apitest2.person.domain.api.NamesRepository
 import com.google.gson.reflect.TypeToken
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -51,6 +55,17 @@ val domainModule = module {
 
     factory<CastConverter> {
         CastConverter()
+    }
+
+
+
+
+    single<NamesRepository> {
+        NamesRepositoryImpl(get())
+    }
+
+    single<NamesInteractor> {
+        NamesInteractorImpl(get())
     }
 
 }

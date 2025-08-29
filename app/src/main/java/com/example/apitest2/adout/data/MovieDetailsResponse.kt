@@ -1,6 +1,6 @@
 package com.example.apitest2.adout.data
 
-import com.example.apitest2.movies.data.dto.Response
+import com.example.apitest2.network.models.Response
 
 class MovieDetailsResponse(val id: String,
                            val title: String,

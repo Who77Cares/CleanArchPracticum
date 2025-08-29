@@ -6,9 +6,10 @@ import android.net.NetworkCapabilities
 import com.example.apitest2.network.api.NetworkClient
 import com.example.apitest2.adout.data.MovieDetailsRequest
 import com.example.apitest2.cast.data.CastRequest
-import com.example.apitest2.movies.data.dto.MovieSearchRequest
-import com.example.apitest2.movies.data.dto.Response
+import com.example.apitest2.network.models.movie.MovieSearchRequest
+import com.example.apitest2.network.models.Response
 import com.example.apitest2.network.api.IMDbApi
+import com.example.apitest2.network.models.person.NamesSearchRequest
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -50,6 +51,13 @@ class RetrofitNetworkClient(private val context: Context) : NetworkClient {
             // получаем каст
             is CastRequest -> {
                 val resp = imdbService.getFullCast(dto.movieId).execute()
+
+                val body = resp.body() ?: Response()
+                body.apply { resultCode = resp.code() }
+            }
+
+            is NamesSearchRequest -> {
+                val resp = imdbService.searchNames(dto.expression).execute()
 
                 val body = resp.body() ?: Response()
                 body.apply { resultCode = resp.code() }

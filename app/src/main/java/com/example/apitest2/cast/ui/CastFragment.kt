@@ -88,8 +88,4 @@ class CastFragment: Fragment() {
         adapter.notifyDataSetChanged()
     }
 
-    // зменилась логика работы метода newInstance. Раньше он возвращал Intent, теперь фрагмент.
-    //Добавился метод onCreateView для создания объекта FragmentMoviesCastBinding и привязки вёрстки к фрагменту.
-    //Оставшаяся логика из MoviesCastActivity попала в метод onViewCreated, в котором нам пришлось немного поменять код для исправления компиляции (нужны были Context и LifecycleOwner).
-
 }

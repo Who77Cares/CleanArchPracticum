@@ -1,4 +1,4 @@
-package com.example.apitest2.movies.data.dto
+package com.example.apitest2.network.models
 
 open class Response() {
 

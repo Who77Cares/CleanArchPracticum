@@ -8,8 +8,8 @@ import com.example.apitest2.cast.data.CastRequest
 import com.example.apitest2.cast.data.CastResponse
 import com.example.apitest2.cast.domain.MovieCast
 import com.example.apitest2.network.api.NetworkClient
-import com.example.apitest2.movies.data.dto.MovieSearchRequest
-import com.example.apitest2.movies.data.dto.MoviesSearchResponse
+import com.example.apitest2.network.models.movie.MovieSearchRequest
+import com.example.apitest2.network.models.movie.MoviesSearchResponse
 import com.example.apitest2.network.api.MoviesRepository
 import com.example.apitest2.movies.domain.models.Movie
 import com.example.apitest2.util.Resource
