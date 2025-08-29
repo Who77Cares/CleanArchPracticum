@@ -19,7 +19,7 @@ import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.apitest2.R
-import com.example.apitest2.adout.poster.PosterActivity
+
 import com.example.apitest2.adout.ui.DetailsFragment
 
 import com.example.apitest2.databinding.FragmentMoviesBinding
@@ -65,9 +65,9 @@ class MoviesFragment: Fragment() {
     private val favAdapter = MoviesAdapter(
         clickListener = {
             if (clickDebounce()) {
-                val intent = Intent(requireContext(), PosterActivity::class.java)
-                intent.putExtra("poster", it.image)
-                startActivity(intent)
+//                val intent = Intent(requireContext(), PosterActivity::class.java)
+//                intent.putExtra("poster", it.image)
+//                startActivity(intent)
             }
         },
         onSaveClick = {

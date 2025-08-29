@@ -10,7 +10,6 @@ import androidx.fragment.app.commit
 import com.example.apitest2.R
 import com.example.apitest2.databinding.FragmentAboutBinding
 import com.example.apitest2.adout.domain.MovieDetails
-import com.example.apitest2.cast.ui.CastActivity
 import com.example.apitest2.cast.ui.CastFragment
 import com.example.apitest2.navigation.navigation_fragment.Router
 import org.koin.androidx.viewmodel.ext.android.viewModel

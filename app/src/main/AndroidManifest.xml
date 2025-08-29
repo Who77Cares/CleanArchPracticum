@@ -30,9 +30,6 @@
             android:name=".adout.poster.PosterActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".cast.ui.CastActivity"
-            android:exported="false" />
 
     </application>
 
