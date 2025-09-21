@@ -7,10 +7,12 @@ import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 
 import com.example.apitest2.network.api.MoviesInteractor
 import com.example.apitest2.movies.domain.SearchHistoryInteractor
 import com.example.apitest2.movies.domain.models.Movie
+import com.example.apitest2.util.debounce
 
 
 class MoviesViewModel(context: Context,
@@ -20,9 +22,9 @@ class MoviesViewModel(context: Context,
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
-
     }
+
+    private val handler = Handler(Looper.getMainLooper())
 
     private val stateLiveData = MutableLiveData<MoviesState>()
     fun observeState(): LiveData<MoviesState> = stateLiveData
@@ -37,7 +39,11 @@ class MoviesViewModel(context: Context,
 
     private var lastSearchText: String = ""
 
-    private val handler = Handler(Looper.getMainLooper())
+    private val movieSearchDebounce = debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
+        searchRequest(changedText)
+    }
+
+
 
     fun searchDebounce(changedText: String) {
 
@@ -46,17 +52,7 @@ class MoviesViewModel(context: Context,
         }
 
         this.lastSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { searchRequest(changedText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
-
+        movieSearchDebounce(changedText)
     }
 
      fun loadHistory() {
@@ -132,10 +128,4 @@ class MoviesViewModel(context: Context,
         stateLiveData.postValue(state)
 
     }
-
-    override fun onCleared() {
-        super.onCleared()
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
-
 }
