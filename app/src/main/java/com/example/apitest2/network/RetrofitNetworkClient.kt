@@ -10,6 +10,8 @@ import com.example.apitest2.network.models.movie.MovieSearchRequest
 import com.example.apitest2.network.models.Response
 import com.example.apitest2.network.api.IMDbApi
 import com.example.apitest2.network.models.person.NamesSearchRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -56,20 +58,47 @@ class RetrofitNetworkClient(private val context: Context) : NetworkClient {
                 body.apply { resultCode = resp.code() }
             }
 
-            is NamesSearchRequest -> {
-                val resp = imdbService.searchNames(dto.expression).execute()
-
-                val body = resp.body() ?: Response()
-                body.apply { resultCode = resp.code() }
-            }
+//            is NamesSearchRequest -> {
+//                val resp = imdbService.searchNames(dto.expression).execute()
+//
+//                val body = resp.body() ?: Response()
+//                body.apply { resultCode = resp.code() }
+//            }
 
             else -> {
                 Response().apply { resultCode = 400 }
             }
+        }
+    }
 
+    override suspend fun doRequestSuspend(dto: Any): Response {
+        if (isConnected() == false) {
+            return Response().apply { resultCode = -1 }
+        }
+
+        if (dto !is NamesSearchRequest) {
+            return Response().apply { resultCode = 400 }
         }
 
 
+        /*
+        withContext(Dispatchers.IO) переключает выполнение текущей корутины на специальный поток, предназначенный
+        для операций ввода-вывода (например, сетевых запросов, работы с файлами, базами данных), чтобы не блокировать главный поток (UI).
+
+        Это помогает:
+        1. Выполнять долгие операции асинхронно, не замедляя работу интерфейса.
+        2. Использовать оптимизированный пул потоков для I/O задач, чтобы избежать блокировки потока, в котором выполняется код.
+         */
+
+        val result = withContext(Dispatchers.IO) {
+            try {
+                val response = imdbService.searchNames(dto.expression)
+                response.apply { resultCode = 200 }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = 500 }
+            }
+        }
+        return result
     }
 
     private fun isConnected(): Boolean {
