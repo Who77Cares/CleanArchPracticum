@@ -1,0 +1,230 @@
+package com.example.apitest2.movies.ui
+
+import android.content.Intent
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.apitest2.R
+
+import com.example.apitest2.adout.ui.DetailsFragment
+
+import com.example.apitest2.databinding.FragmentMoviesBinding
+import com.example.apitest2.movies.domain.models.Movie
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+
+
+class MoviesFragment: Fragment() {
+
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 5000L
+    }
+
+
+    private val viewModel by viewModel<MoviesViewModel>()
+
+
+    private val adapter = MoviesAdapter(
+        clickListener = { movie ->
+            if (clickDebounce()) {
+                findNavController().navigate(
+                    R.id.action_moviesFragment_to_detailsFragment,
+                    DetailsFragment.createArgs(movie.id, movie.image)
+                )
+            }
+        },
+
+        onSaveClick = {
+            viewModel?.saveToHistory(it)
+            showToast("Фильм сохранён в избранное")
+        }
+    )
+
+    private val favAdapter = MoviesAdapter(
+        clickListener = {
+            if (clickDebounce()) {
+//                val intent = Intent(requireContext(), PosterActivity::class.java)
+//                intent.putExtra("poster", it.image)
+//                startActivity(intent)
+            }
+        },
+        onSaveClick = {
+            // Здесь можно либо ничего не делать, либо повторно сохранить, если нужно
+            showToast("Этот фильм уже в избранном")
+        }
+    )
+
+    private lateinit var binding: FragmentMoviesBinding
+    private val handler = Handler(Looper.getMainLooper())
+
+    private lateinit var queryInput: EditText
+    private lateinit var placeholderMessage: TextView
+    private lateinit var moviesList: RecyclerView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var showHistoryButton: Button
+    private var textWatcher: TextWatcher? = null
+
+
+    private lateinit var favMovieList: RecyclerView
+
+    private var isClickAllowed = true
+
+    // свяжем вёрстку с кодом фрагмента
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentMoviesBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        placeholderMessage = binding.placeholderMessage
+        queryInput = binding.queryInput
+        moviesList = binding.movies
+        progressBar = binding.progressBar
+        favMovieList = binding.favMovies
+        showHistoryButton = binding.showFavoriteMovies
+
+        moviesList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        moviesList.adapter = adapter
+
+        favMovieList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        favMovieList.adapter = favAdapter
+
+
+
+        textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel?.searchDebounce(
+                    changedText = s?.toString() ?: ""
+                )
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        }
+        textWatcher?.let { queryInput.addTextChangedListener(it) }
+
+
+
+        // Здесь пришлось заменить LifecycleOwner на ViewLifecycleOwner
+        viewModel?.observeState()?.observe(viewLifecycleOwner) {
+            render(it)
+        }
+
+        viewModel?.observeShowToast()?.observe(viewLifecycleOwner) {
+            showToast(it)
+        }
+
+        viewModel?.observeHistoryMovies()?.observe(viewLifecycleOwner) {
+            showFavMovies(it)
+        }
+
+
+        showHistoryButton.setOnClickListener {
+            viewModel?.loadHistory()
+        }
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        textWatcher?.let { queryInput.removeTextChangedListener(it) }
+    }
+
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+
+            lifecycleScope.launch {
+                delay(CLICK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
+        }
+        return current
+    }
+
+    private fun showLoading() {
+        moviesList.visibility = View.GONE
+        placeholderMessage.visibility = View.GONE
+        progressBar.visibility = View.VISIBLE
+
+        favMovieList.visibility = View.GONE
+    }
+
+    private fun showError(erorrMessage: String) {
+        moviesList.visibility = View.GONE
+        placeholderMessage.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
+        favMovieList.visibility = View.GONE
+
+        placeholderMessage.text = erorrMessage
+    }
+
+    private fun showEmpty(emptyMessage: String) {
+        showError(emptyMessage)
+    }
+
+    private fun showContent(movies: List<Movie>) {
+        moviesList.visibility = View.VISIBLE
+        placeholderMessage.visibility = View.GONE
+        progressBar.visibility = View.GONE
+        favMovieList.visibility = View.GONE
+
+        adapter.movies.clear()
+        adapter.movies.addAll(movies)
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun showFavMovies(historyMovies: List<Movie>) {
+        favMovieList.visibility = View.VISIBLE
+        moviesList.visibility = View.GONE
+        placeholderMessage.visibility = View.GONE
+        progressBar.visibility = View.GONE
+
+        favAdapter.movies.clear()
+        favAdapter.movies.addAll(historyMovies)
+        favAdapter.notifyDataSetChanged()
+    }
+
+    private fun render(state: MoviesState) {
+        when (state) {
+            is MoviesState.Content -> showContent(state.movies)
+            is MoviesState.Empty -> showEmpty(state.message)
+            is MoviesState.Error -> showError(state.errorMessage)
+            is MoviesState.Loading -> showLoading()
+
+            else -> {println(11)}
+        }
+    }
+
+    private fun showToast(additionalMessage: String?) {
+        Toast.makeText(requireContext(), additionalMessage, Toast.LENGTH_LONG)
+            .show()
+    }
+
+}
