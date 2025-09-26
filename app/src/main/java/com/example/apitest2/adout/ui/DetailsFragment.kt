@@ -21,8 +21,10 @@ class DetailsFragment: Fragment() {
         const val TAG = "DetailsFragment"
 
         fun createArgs(movieId: String, posterUrl: String): Bundle =
-            bundleOf(ARGS_MOVIE_ID to movieId,
-                ARGS_POSTER_URL to posterUrl)
+            bundleOf(
+                ARGS_MOVIE_ID to movieId,
+                ARGS_POSTER_URL to posterUrl
+            )
 
     }
 
